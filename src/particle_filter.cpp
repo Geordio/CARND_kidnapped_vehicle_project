@@ -99,7 +99,7 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
       int min_id = -1;
 
       for (int j=0; j< predicted.size(); j++) {
-        LandmarkObs pred = prediction[i];
+        LandmarkObs pred = predicted[i];
 
         double delta_x = pred.x - obs.x;
         double delta_y = pred.y - obs.y;
@@ -107,13 +107,13 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
         double dist_err = delta_x*delta_x + delta_y*delta_y;
 
         // if this prediction is nearest to the observed landmark then set the id
-        if dist_err < min_dist) {
-          min_dist = dist;
+        if (dist_err < min_dist) {
+          min_dist = dist_err;
           min_id = i;
         }
       }
 
-      obs.i = min_id;
+      obs.id = min_id;
 
     }
 
@@ -131,6 +131,50 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   and the following is a good resource for the actual equation to implement (look at equation 
 	//   3.33
 	//   http://planning.cs.uiuc.edu/node99.html
+
+  for (int i = 0; i < num_particles; i++){
+    double px = particles[i].x;
+    double py = particles[i].y;
+    double ptheta = particles[i].theta;
+
+
+    vector<LandmarkObs> predictions;
+
+    for (int j = 0; j < map_landmarks.landmark_list.size(); j++){
+
+
+      // transform observation coordinates
+
+      vector<LandmarkObs> trans_obs;
+
+      for (int k = 0; k < observations.size(); k++ ){
+        double tx = cos(ptheta)*observations[k].x - sin(ptheta)*observations[k].y + px;
+        double ty = sin(ptheta)*observations[k].x + cos(ptheta)*observations[k].y + py;
+        LandmarkObs  trans = {k, tx, tx};
+        trans_obs.push_back(trans);
+      }
+
+
+
+    // TODO get the poistions from the map
+      // note the positions here are floats
+      float lx = map_landmarks.landmark_list[j].x_f;
+      float ly = map_landmarks.landmark_list[j].y_f;
+      int lid = map_landmarks.landmark_list[j].id_i;
+
+      // calculate the difference
+      float dx = fabs(lx - px);
+      float dy = fabs(ly - py);
+    }
+
+
+    // TODO , ignore anything outside of sensor range
+
+
+    // TODO normalise
+
+
+  }
 
 
 }
