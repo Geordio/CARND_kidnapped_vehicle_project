@@ -32,14 +32,14 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   normal_distribution<double> dist_theta(theta, std[2]);
 
   // iterate though the particles
-  for (i =0; i< num_particles; i++) {
+  for (int i =0; i< num_particles; i++) {
     Particle p;
     p.id = i;
     p.x = dist_x(gen);
     p.y = dist_y(gen);
     p.theta = dist_theta(gen);
     p.weight = 1;
-
+    particles.push_back(p);
   }
 
   // set the initialised flag
@@ -52,6 +52,35 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 	//  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
 	//  http://www.cplusplus.com/reference/random/default_random_engine/
 
+
+  default_random_engine gen;
+
+  normal_distribution<double> dist_x(0, std_pos[0]);
+  normal_distribution<double> dist_y(0, std_pos[1]);
+  normal_distribution<double> dist_theta(0, std_pos[2]);
+
+  // iterate though the particles
+  for (int i =0; i< num_particles; i++) {
+
+    if (fabs(yaw_rate) < 0.0001){
+      particles[i].x += velocity * delta_t * cos(particles[i].theta);
+      particles[i].y += velocity * delta_t * sin(particles[i].theta);
+    }
+    else {
+      particles[i].x += velocity / yaw_rate * delta_t * (sin(particles[i].theta + yaw_rate * delta_t) - sin(particles[i].theta));
+      particles[i].y += velocity / yaw_rate * delta_t * (cos(particles[i].theta) - cos(particles[i].theta + yaw_rate * delta_t));
+      particles[i].theta += yaw_rate * delta_t;
+    }
+
+
+// add gaussian noise
+    particles[i].x += dist_x(gen);
+    particles[i].y += dist_y(gen);
+    particles[i].theta += dist_theta(gen);
+
+  }
+
+
 }
 
 void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations) {
@@ -59,6 +88,34 @@ void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::ve
 	//   observed measurement to this particular landmark.
 	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to 
 	//   implement this method and use it as a helper during the updateWeights phase.
+
+    for (int i = 0; i < observations.size(); i++){
+
+      // current observations
+      LandmarkObs obs = observations[i];
+
+      // initialise the minimum distance to infinity
+      double min_dist = INFINITY;
+      int min_id = -1;
+
+      for (int j=0; j< predicted.size(); j++) {
+        LandmarkObs pred = prediction[i];
+
+        double delta_x = pred.x - obs.x;
+        double delta_y = pred.y - obs.y;
+
+        double dist_err = delta_x*delta_x + delta_y*delta_y;
+
+        // if this prediction is nearest to the observed landmark then set the id
+        if dist_err < min_dist) {
+          min_dist = dist;
+          min_id = i;
+        }
+      }
+
+      obs.i = min_id;
+
+    }
 
 }
 
@@ -74,6 +131,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 	//   and the following is a good resource for the actual equation to implement (look at equation 
 	//   3.33
 	//   http://planning.cs.uiuc.edu/node99.html
+
+
 }
 
 void ParticleFilter::resample() {
