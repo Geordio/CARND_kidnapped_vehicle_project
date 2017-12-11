@@ -16,6 +16,10 @@ In this project you will implement a 2 dimensional particle filter in C++. Your 
 ## Project performance
 
 When run against the simulato, the particle filter successfully tracks the vehicle location.
+
+A GIF of the particle filter running against the simulator can be seen below:
+![Simulator View](https://github.com/Geordio/CARND_kidnapped_vehicle_project/blob/master/writeup/simulator.gif  "Simulator View")
+
 A screenshot can be seen below:
 ![Simulator View](https://github.com/Geordio/CARND_kidnapped_vehicle_project/blob/master/writeup/simulator_screenshot.png  "Simulator View")
 
