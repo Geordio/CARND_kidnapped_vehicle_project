@@ -17,7 +17,7 @@ In this project you will implement a 2 dimensional particle filter in C++. Your 
 
 When run against the simulato, the particle filter successfully tracks the vehicle location.
 A screenshot can be seen below:
-![Simulator View](https://github.com/Geordio/CarND-Unscented-Kalman-Filter-Project/blob/master/writeup/simulator_screenshot.png  "Simulator View")
+![Simulator View](https://github.com/Geordio/CARND_kidnapped_vehicle_project/blob/master/writeup/simulator_screenshot.png  "Simulator View")
 
 # Other information
 
